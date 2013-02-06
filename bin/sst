@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 
+TOKEN_PATH = "#{ENV['HOME']}/.semaphore_token"
+
 help = <<-MSG
 This utility shows current status of your projects on Semaphore.
 
@@ -23,13 +25,11 @@ MSG
 
 if i = ARGV.index('-t') or i = ARGV.index('--token')
   token = ARGV[i + 1]
-  ENV['SEMAPHORE_API_KEY'] = token
 
-  exit
-end
+  file = File.open(TOKEN_PATH, "w")
+  file.write(token)
 
-unless ENV['SEMAPHORE_API_KEY']
-  puts 'Please provide authentication token for your Semaphore account with: "export $SEMAPHORE_API_KEY = \'<your_token>""'
+  puts 'Token successfully saved.' 
   exit
 end
 
@@ -41,13 +41,29 @@ end
 require "semaphore-status"
 
 def get_projects(query = nil)
-  sst = SemaphoreClient.new('qH36J7zzMfAGG8xmF72f')
+  sst = SemaphoreClient.new(ENV['SEMAPHORE_API_KEY'])
   if query
     sst.tree(query)
   else
     sst.tree
   end
 end
+
+unless ENV['SEMAPHORE_API_KEY']
+
+  if !File.exist?(TOKEN_PATH)
+    puts 'Please provide authentication token for your Semaphore account with: "sst -t <your_token>".'
+    exit
+  else
+    key =  File.read(TOKEN_PATH).chomp
+    if key.empty?
+      puts 'Please provide authentication token.'
+    else
+      ENV['SEMAPHORE_API_KEY'] = key
+    end 
+  end
+end
+
 
 if i = ARGV.index('-i') or i = ARGV.index('--interactive')
   query = ARGV[i + 1]
@@ -58,8 +74,6 @@ end
 
 if ARGV.empty?
   get_projects
-  exit
 else
   get_projects(ARGV[0])
-  exit
 end
