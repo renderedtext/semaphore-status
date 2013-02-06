@@ -21,8 +21,15 @@ Usage:  sst
         sst -h
 MSG
 
+if i = ARGV.index('-t') or i = ARGV.index('--token')
+  token = ARGV[i + 1]
+  ENV['SEMAPHORE_API_KEY'] = token
+
+  exit
+end
+
 unless ENV['SEMAPHORE_API_KEY']
-  puts 'Please provide authentication token for your Semaphore account with: "sst -t \'_your_token_\'" '
+  puts 'Please provide authentication token for your Semaphore account with: "export $SEMAPHORE_API_KEY = \'<your_token>""'
   exit
 end
 
@@ -31,14 +38,16 @@ if ARGV.index('-h') or ARGV.index('--help')
   exit
 end
 
-if i = ARGV.index('-t') or i = ARGV.index('--token')
-  token = ARGV[i + 1]
-  set_env_key(token)
-
-  exit
-end
-
 require "semaphore-status"
+
+def get_projects(query = nil)
+  sst = SemaphoreClient.new('qH36J7zzMfAGG8xmF72f')
+  if query
+    sst.tree(query)
+  else
+    sst.tree
+  end
+end
 
 if i = ARGV.index('-i') or i = ARGV.index('--interactive')
   query = ARGV[i + 1]
@@ -53,21 +62,4 @@ if ARGV.empty?
 else
   get_projects(ARGV[0])
   exit
-end
-
-
-
-private
-
-def set_env_key(key)
-  ENV['SEMAPHORE_API_KEY'] = key
-end
-
-def get_projects(query = nil)
-  sst = SemaphoreClient.new('qH36J7zzMfAGG8xmF72f')
-  if query.present?
-    sst.tree
-  else
-    sst.tree query
-  end
 end

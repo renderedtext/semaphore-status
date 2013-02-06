@@ -2,6 +2,7 @@
 
 require "semaphore-status/version"
 require "open-uri"
+require 'json'
 
 
 class SemaphoreClient
