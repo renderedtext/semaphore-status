@@ -43,7 +43,6 @@ Command-line interface for checking projects status on Semaphore.
 
 ## Screenshots
 
-![semaphore status first run](https://dl.dropbox.com/u/5802579/semaphore-status-1.png '')
 ![semaphore status usage](https://dl.dropbox.com/u/5802579/semaphore-status-2.png '')
 
 ## Contributing
