@@ -2,25 +2,38 @@
 # -*- coding: utf-8 -*-
 
 TOKEN_PATH = "#{ENV['HOME']}/.semaphore_token"
+REFRESH_INTERVAL = 5
 
 help = <<-MSG
 This utility shows current status of your projects on Semaphore.
 
-To set authentication token first time you must run "sst -t \'_your_token_\'".
-After that you can simply call "sst" or provide name of project which status you want to see, like "sst <project_name>".
-In interactive mode you will see live status of your build (updates every 5sec).
+Running 'sst' in project repository that is on Semaphore, Semaphore-status will list only that project, otherwise sst will list you all projects you have on Semaphore.
+To list all projects in any directorium, simply provide flag -a 'sst -a'.
+
+To check only one project, you can provide project name like 'sst <project_name>'.
+
+Semaphore-status have interactive mood, in which you can see live status of your build (refresh rate 5sec).
+
+To change authentication token you run 'sst -t <your_token_>'.
+
+Running 'sst' in interactive mode you will see live status of your build (updates every 5sec).
 
 Options:
-  -i    Interactive mode
-  -t    Set authentication token
-  -h    Print this help
 
-Usage:  sst
-        sst <project_name>
-        sst -i
-        sst -i <project_name> 
-        sst -t <your_token>
-        sst -h
+  -i    (--interactive) Interactive mode
+  -a    (--all) All projects
+  -t    (--token) Set authentication token
+  -h    (--help) Prints help
+
+Usage:  
+
+  sst                    
+  sst <project_name>     
+  sst -a                 
+  sst -i                 
+  sst -i <project_name>  
+  sst -t <your_token>    
+  sst -h                 
 MSG
 
 if system('git rev-parse 2>/dev/null ')
@@ -47,8 +60,8 @@ end
 
 require "semaphore-status"
 
-def get_projects(query = nil)
-  sst = SemaphoreClient.new(ENV['SEMAPHORE_API_KEY'])
+def get_projects(query = nil, interactive = false)
+  puts "\e[H\e[2J" if interactive
   if query
     sst.tree(query)
   else
@@ -95,9 +108,8 @@ if i = ARGV.index('-i') or i = ARGV.index('--interactive')
 
   query = ARGV[i + 1] if ARGV[i + 1]
   until interrupted do
-    puts "\e[H\e[2J"
     puts 'Press Ctrl-C to exit semaphore-status.'
-    get_projects(query)
+    get_projects(query, true)
     sleep 5
   end
   exit
