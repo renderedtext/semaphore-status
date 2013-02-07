@@ -61,6 +61,7 @@ end
 require "semaphore-status"
 
 def get_projects(query = nil, interactive = false)
+  sst = SemaphoreClient.new(ENV['SEMAPHORE_API_KEY'])
   puts "\e[H\e[2J" if interactive
   if query
     sst.tree(query)
