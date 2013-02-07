@@ -89,9 +89,17 @@ if ARGV.index('-a') or ARGV.index('--all')
 end
 
 if i = ARGV.index('-i') or i = ARGV.index('--interactive')
-  query = ARGV[i + 1]
-  get_projects(query)
 
+  interrupted = false
+  trap("INT") { interrupted = true }
+
+  query = ARGV[i + 1] if ARGV[i + 1]
+  until interrupted do
+    puts "\e[H\e[2J"
+    puts 'Press Ctrl-C to exit semaphore-status.'
+    get_projects(query)
+    sleep 5
+  end
   exit
 end
 

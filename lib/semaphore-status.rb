@@ -21,7 +21,7 @@ class SemaphoreClient
       if  projects.empty?
         puts 'This git repository is not on Semaphore.'
         self.tree
-        exit
+        return
       end
     else
       projects = @json_response
