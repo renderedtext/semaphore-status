@@ -52,7 +52,19 @@ end
 unless ENV['SEMAPHORE_API_KEY']
 
   if !File.exist?(TOKEN_PATH)
-    puts 'Please provide authentication token for your Semaphore account with: "sst -t <your_token>".'
+    token = ''
+    puts 'Please enter authentication token for your Semaphore account:'
+    while token.lstrip.empty?
+      token = gets.chomp
+    end
+
+    file = File.open(TOKEN_PATH, "w")
+    file.write(token)
+    ENV['SEMAPHORE_API_KEY'] = token
+
+    puts 'Token successfully saved.' 
+
+    get_projects
     exit
   else
     key =  File.read(TOKEN_PATH).chomp
