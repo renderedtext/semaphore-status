@@ -19,7 +19,8 @@ class SemaphoreClient
     if query
       projects = search(query)
       if  projects.empty?
-        print 'There is no projects with that name.'
+        puts 'This git repository is not on Semaphore.'
+        self.tree
         exit
       end
     else

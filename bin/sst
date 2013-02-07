@@ -23,6 +23,13 @@ Usage:  sst
         sst -h
 MSG
 
+if system('git rev-parse 2>/dev/null ')
+  git_repo_cmd =  %q(git remote -v | head -n1 | awk '{print $2}' | sed 's/.*\///' | sed 's/\.git//')
+  query = `#{git_repo_cmd}`.chomp
+else
+ query = nil
+end
+
 if i = ARGV.index('-t') or i = ARGV.index('--token')
   token = ARGV[i + 1]
 
@@ -64,18 +71,22 @@ unless ENV['SEMAPHORE_API_KEY']
 
     puts 'Token successfully saved.' 
 
-    get_projects
+    get_projects(query)
     exit
   else
     key =  File.read(TOKEN_PATH).chomp
     if key.empty?
-      puts 'Please provide authentication token.'
+      puts 'Please provide new authentication token with: sst -t <your_token>.'
     else
       ENV['SEMAPHORE_API_KEY'] = key
     end 
   end
 end
 
+if ARGV.index('-a') or ARGV.index('--all')
+  get_projects()
+  exit
+end
 
 if i = ARGV.index('-i') or i = ARGV.index('--interactive')
   query = ARGV[i + 1]
@@ -85,7 +96,7 @@ if i = ARGV.index('-i') or i = ARGV.index('--interactive')
 end
 
 if ARGV.empty?
-  get_projects
+  get_projects(query)
 else
   get_projects(ARGV[0])
 end
