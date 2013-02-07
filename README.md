@@ -1,6 +1,6 @@
 # Semaphore-status
 
-Command-line interface for checking projects status on Semaphore.
+Command-line interface for checking projects status on [Semaphore](https://semaphoreapp.com/).
 
 ## Installation
 
