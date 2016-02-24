@@ -8,7 +8,7 @@ require 'time'
 
 class SemaphoreClient
 
-  API_URL = 'https://semaphoreapp.com/api/v1/projects?auth_token='
+  API_URL = 'https://semaphoreci.com/api/v1/projects?auth_token='
 
   def initialize(token)
       response = open(API_URL+token).read
